@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+  product:
+    image: 'naton:latest'
+    container_name: naton
+    ports:
+      - 9001:9001
+    build:
+      context: .
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/naton
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    command: java -Djava.security.egd=file:/dev/./urandom -jar /project/target/product-service-0.0.1.jar
+
+  db:
+    image: 'postgres:13.1-alpine'
+    container_name: db
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=naton
+    volumes:
+      - ./create_objects.sql:/docker-entrypoint-initdb.d/create_objects.sql
